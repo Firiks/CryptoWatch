@@ -5,6 +5,7 @@ Lambda that will subscribe user to sns topic
 import os
 import boto3
 import json
+import re
 
 sns = boto3.client('sns')
 
@@ -18,7 +19,7 @@ def handle(event, context):
     email = json.loads(event['body'])['email']
 
     # check if email is valid
-    if not email:
+    if not email or not is_valid_email(email):
         return {
             'statusCode': 400,
             'body': 'Please provide a valid email address'
@@ -29,7 +30,7 @@ def handle(event, context):
         TopicArn=topic_arn,
         Protocol='email',
         Endpoint=email
-    )s
+    )
 
     # subscribe webhok to the SNS topic
     # sns.subscribe(
@@ -42,3 +43,7 @@ def handle(event, context):
         'statusCode': 200,
         'body': 'Successfully subscribed {} to the SNS topic'.format(email)
     }
+
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(pattern, email) is not None
