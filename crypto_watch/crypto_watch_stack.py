@@ -3,7 +3,7 @@ Define stack
 """
 
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 from aws_cdk import (
     Duration,
     Stack,
@@ -96,6 +96,23 @@ class CryptoWatchStack(Stack):
         topic.add_subscription(_sns_subscription.EmailSubscription(EMAIL, json=False)) # email
 
         """
+        IAM
+        """
+
+        # Create the IAM role for the Lambda function
+        role = _iam.Role(
+            self, "LambdaExecutionRole",
+            assumed_by=_iam.ServicePrincipal("lambda.amazonaws.com")
+        )
+
+        role.add_to_policy(
+            _iam.PolicyStatement(
+                actions=["sns:Subscribe"],
+                resources=[topic.topic_arn]
+            )
+        )
+
+        """
         Lambda
         """
 
@@ -158,7 +175,8 @@ class CryptoWatchStack(Stack):
                 "SNS_ARN": topic.topic_arn,
             },
             timeout=Duration.seconds(1),
-            tracing=_lambda.Tracing.ACTIVE # enable xray tracing
+            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            role=role
         )
 
         """
