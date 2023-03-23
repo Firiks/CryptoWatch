@@ -39,7 +39,6 @@ class CryptoWatchStack(Stack):
         SYMBOLS= os.getenv('SYMBOLS') # symbols to watch
         CHANGE= os.getenv('CHANGE') # % change to send message
         EVENT_INTERVAL_MINUTES = os.getenv('EVENT_INTERVAL_MINUTES') # EventBridge interval in minutes
-        EVENT_INTERVAL_HOURS = os.getenv('EVENT_INTERVAL_HOURS') # EventBridge interval to start in hours
         EMAIL = os.getenv('EMAIL') # email to send notification
         TELEGRAM_API_KEY = os.getenv('TELEGRAM_API_KEY') # Telegram bot API key
         TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID') # Telegram chat ID
@@ -194,7 +193,7 @@ class CryptoWatchStack(Stack):
             batch_size=5, # number of records to process in a batch
             bisect_batch_on_error=True,
             on_failure=_lambda_event_sources.SqsDlq(cryptoWatchSQS),
-            retry_attempts=10,
+            retry_attempts=3, # number of times to retry
         ))
 
         """
