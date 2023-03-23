@@ -5,6 +5,7 @@ Lambda that is invoked by dynamoDB stream
 import os
 import boto3
 import requests
+import urllib.parse
 from utils import run_id
 
 sns_client = boto3.client('sns')
@@ -67,8 +68,12 @@ def notify_telegram(message):
     api_key = str(os.environ["TELEGRAM_API_KEY"])
     chat_id = str(os.environ["TELEGRAM_CHAT_ID"])
 
+    message = urllib.parse.quote(message)
+
     send_data = 'https://api.telegram.org/bot' + api_key + '/sendMessage?chat_id=' + chat_id + '&parse_mode=MarkdownV2&text=' + message
-    requests.get(send_data)
+    response = requests.get(send_data)
+
+    print('Telegram webhook response:' ,response.json())
 
 
 def notify_discord(message):
@@ -76,4 +81,6 @@ def notify_discord(message):
     webhook_url = str(os.environ['DISCORD_WEBHOOK'])
 
     data = {"content": message}
-    requests.post(webhook_url, json=data)
+    response = requests.post(webhook_url, json=data)
+
+    print('Discord webhook response:' , response.json())
