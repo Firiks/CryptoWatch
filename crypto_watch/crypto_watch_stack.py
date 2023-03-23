@@ -38,7 +38,8 @@ class CryptoWatchStack(Stack):
 
         SYMBOLS= os.getenv('SYMBOLS') # symbols to watch
         CHANGE= os.getenv('CHANGE') # % change to send message
-        EVENT_INTERVAL = os.getenv('EVENT_INTERVAL') # EventBridge interval in minutes
+        EVENT_INTERVAL_MINUTES = os.getenv('EVENT_INTERVAL_MINUTES') # EventBridge interval in minutes
+        EVENT_INTERVAL_HOURS = os.getenv('EVENT_INTERVAL_HOURS') # EventBridge interval to start in hours
         EMAIL = os.getenv('EMAIL') # email to send notification
         TELEGRAM_API_KEY = os.getenv('TELEGRAM_API_KEY') # Telegram bot API key
         TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID') # Telegram chat ID
@@ -56,13 +57,14 @@ class CryptoWatchStack(Stack):
                 type=_dynamodb.AttributeType.STRING
             ),
             billing_mode=_dynamodb.BillingMode.PROVISIONED,
-            # replication_regions=['eu-west-1', 'eu-west-2', 'eu-west-3'],
+            # replication_regions=['eu-west-1', 'eu-west-2', 'eu-west-3'], # uncoment to enable scaling across multiple regions
             table_class=_dynamodb.TableClass.STANDARD,
             stream=_dynamodb.StreamViewType.NEW_AND_OLD_IMAGES, # get old and new data in stream
             write_capacity=1,
             read_capacity=1
         )
 
+        # uncoment to enable scaling across multiple regions
         # read scaling
         # table.auto_scale_read_capacity(
         #     min_capacity=1,
@@ -132,7 +134,8 @@ class CryptoWatchStack(Stack):
                 "SYMBOLS": SYMBOLS
             },
             timeout=Duration.seconds(5),
-            tracing=_lambda.Tracing.ACTIVE # enable xray tracing
+            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            description="Fetch data from CoinGecko API"
         )
 
         # Notify SNS Lambda
@@ -150,13 +153,13 @@ class CryptoWatchStack(Stack):
             environment={
                 "SNS_ARN": topic.topic_arn,
                 "CHANGE": CHANGE,
-                "EVENT_INTERVAL": EVENT_INTERVAL,
                 "TELEGRAM_API_KEY": TELEGRAM_API_KEY,
                 "TELEGRAM_CHAT_ID": TELEGRAM_CHAT_ID,
                 "DISCORD_WEBHOOK": DISCORD_WEBHOOK
             },
             timeout=Duration.seconds(5),
-            tracing=_lambda.Tracing.ACTIVE # enable xray tracing
+            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            description="Notify SNS topic"
         )
 
         # Add subscriber Lambda
@@ -176,7 +179,8 @@ class CryptoWatchStack(Stack):
             },
             timeout=Duration.seconds(1),
             tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
-            role=role
+            role=role,
+            description="Subscribe user to SNS topic"
         )
 
         """
@@ -186,8 +190,8 @@ class CryptoWatchStack(Stack):
         # Invoke notifySNSFunction using DynamoDB Stream
         notifySNSFunction.add_event_source(_lambda_event_sources.DynamoEventSource(
             table,
-            starting_position=_lambda.StartingPosition.TRIM_HORIZON,
-            batch_size=5,
+            starting_position=_lambda.StartingPosition.TRIM_HORIZON, # start from the beginning
+            batch_size=5, # number of records to process in a batch
             bisect_batch_on_error=True,
             on_failure=_lambda_event_sources.SqsDlq(cryptoWatchSQS),
             retry_attempts=10,
@@ -201,7 +205,11 @@ class CryptoWatchStack(Stack):
         eventRule = _events.Rule(
             self,
             'EventRuleCryptowatch',
-            schedule= _events.Schedule.rate(Duration.minutes(int(EVENT_INTERVAL))) # every x min
+            # schedule= _events.Schedule.rate(Duration.minutes(int(EVENT_INTERVAL_MINUTES))) # every x min
+            schedule = _events.Schedule.cron( # use cron expression
+                minute=str(EVENT_INTERVAL_MINUTES),
+                hour=str(EVENT_INTERVAL_HOURS)
+            )
         )
 
         # Invoke fetchDataFunction
