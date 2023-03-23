@@ -208,7 +208,6 @@ class CryptoWatchStack(Stack):
             # schedule= _events.Schedule.rate(Duration.minutes(int(EVENT_INTERVAL_MINUTES))) # every x min
             schedule = _events.Schedule.cron( # use cron expression
                 minute=str(EVENT_INTERVAL_MINUTES),
-                hour=str(EVENT_INTERVAL_HOURS)
             )
         )
 

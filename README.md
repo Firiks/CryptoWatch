@@ -1,7 +1,7 @@
 
 # CryptoWatch
 
-Cryptowatch is a serverless application that allows you to monitor the price of cryptocurrencies. You can set up alerts for when the price of a cryptocurrency increases or decreases by a certain percentage. To set up alert on specific cryptocurrencies, you must first add them to .env(create it from .env.example) file like `SYMBOLS="bitcoin,ethereum,..."`. The interval for checking the price of cryptocurrencies is in minutes and is set in the .env file as `EVENT_INTERVAL_MINUTES='30'`, `EVENT_INTERVAL_HOURS='0-23/1'` to run at specific hours and percentage treshold is set in `CHANGE=2`. The application is deployed on AWS using AWS CDK.
+Cryptowatch is a serverless application that allows you to monitor the price of cryptocurrencies. You can set up alerts for when the price of a cryptocurrency increases or decreases by a certain percentage. To set up alert on specific cryptocurrencies, you must first add them to .env(create it from .env.example) file like `SYMBOLS="bitcoin,ethereum,..."`. The interval for checking the price of cryptocurrencies is in minutes and is set in the .env file as `EVENT_INTERVAL_MINUTES='0,30'` and percentage treshold is set in `CHANGE=2`. The application is deployed on AWS using AWS CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
