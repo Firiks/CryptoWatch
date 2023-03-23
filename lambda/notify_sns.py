@@ -68,9 +68,8 @@ def notify_telegram(message):
     api_key = str(os.environ["TELEGRAM_API_KEY"])
     chat_id = str(os.environ["TELEGRAM_CHAT_ID"])
 
-    # escape . and _ for telegram markdown
-    message = message.replace('.', '\.')
-    message = message.replace('_', '\_')
+    # escape message for telegram markdown
+    message = message.replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("]", "\\]").replace(")", "\\)").replace("(", "\\(").replace("`", "\\`").replace(".", "\\.").replace("#", "\\#")
 
     # escape special characters
     message = urllib.parse.quote(message)
