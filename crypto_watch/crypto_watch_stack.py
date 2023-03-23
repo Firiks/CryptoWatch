@@ -133,7 +133,7 @@ class CryptoWatchStack(Stack):
                 "SYMBOLS": SYMBOLS
             },
             timeout=Duration.seconds(5),
-            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            # tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
             description="Fetch data from CoinGecko API"
         )
 
@@ -157,7 +157,7 @@ class CryptoWatchStack(Stack):
                 "DISCORD_WEBHOOK": DISCORD_WEBHOOK
             },
             timeout=Duration.seconds(5),
-            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            # tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
             description="Notify SNS topic"
         )
 
@@ -177,7 +177,7 @@ class CryptoWatchStack(Stack):
                 "SNS_ARN": topic.topic_arn,
             },
             timeout=Duration.seconds(1),
-            tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
+            # tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
             role=role,
             description="Subscribe user to SNS topic"
         )
