@@ -68,12 +68,17 @@ def notify_telegram(message):
     api_key = str(os.environ["TELEGRAM_API_KEY"])
     chat_id = str(os.environ["TELEGRAM_CHAT_ID"])
 
+    # escape . and _ for telegram markdown
+    message = message.replace('.', '\.')
+    message = message.replace('_', '\_')
+
+    # escape special characters
     message = urllib.parse.quote(message)
 
     send_data = 'https://api.telegram.org/bot' + api_key + '/sendMessage?chat_id=' + chat_id + '&parse_mode=MarkdownV2&text=' + message
     response = requests.get(send_data)
 
-    print('Telegram webhook response:' ,response.json())
+    print('Telegram webhook response:' , response.json())
 
 
 def notify_discord(message):
@@ -83,4 +88,4 @@ def notify_discord(message):
     data = {"content": message}
     response = requests.post(webhook_url, json=data)
 
-    print('Discord webhook response:' , response.json())
+    print('Discord webhook response:' , response.status_code)
