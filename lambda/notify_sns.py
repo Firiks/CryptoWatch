@@ -69,7 +69,7 @@ def notify_telegram(message):
     chat_id = str(os.environ["TELEGRAM_CHAT_ID"])
 
     # escape message for telegram markdown
-    message = message.replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("]", "\\]").replace(")", "\\)").replace("(", "\\(").replace("`", "\\`").replace(".", "\\.").replace("#", "\\#")
+    message = message.replace("_", "\\_").replace("-", "\\-").replace("*", "\\*").replace("[", "\\[").replace("]", "\\]").replace(")", "\\)").replace("(", "\\(").replace("`", "\\`").replace(".", "\\.").replace("#", "\\#").replace("+", "\\+").replace("!", "\\!").replace("~", "\\~").replace("|", "\\|")
 
     # escape special characters
     message = urllib.parse.quote(message)
