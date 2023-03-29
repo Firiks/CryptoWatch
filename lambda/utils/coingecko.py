@@ -17,7 +17,7 @@ def check_status():
         'Accept': 'application/json'
     }
 
-    response = requests.get(url, headers=headers, timeout=5)
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         return True
@@ -43,7 +43,7 @@ def fetch_price_data_by_symbol(symbol):
         'Accept': 'application/json'
     }
 
-    response = requests.get(url, headers=headers, params=params, timeout=5)
+    response = requests.get(url, headers=headers, params=params)
 
     if not response.ok:
         raise Exception(f"Request for '{url}' failed")

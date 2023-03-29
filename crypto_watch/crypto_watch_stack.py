@@ -132,7 +132,7 @@ class CryptoWatchStack(Stack):
             environment={
                 "SYMBOLS": SYMBOLS
             },
-            timeout=Duration.seconds(5),
+            timeout=Duration.seconds(2),
             # tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
             description="Fetch data from CoinGecko API"
         )
@@ -156,7 +156,7 @@ class CryptoWatchStack(Stack):
                 "TELEGRAM_CHAT_ID": TELEGRAM_CHAT_ID,
                 "DISCORD_WEBHOOK": DISCORD_WEBHOOK
             },
-            timeout=Duration.seconds(5),
+            timeout=Duration.seconds(2),
             # tracing=_lambda.Tracing.ACTIVE, # enable xray tracing
             description="Notify SNS topic"
         )
