@@ -191,7 +191,6 @@ class CryptoWatchStack(Stack):
             table,
             starting_position=_lambda.StartingPosition.TRIM_HORIZON, # start from the beginning
             batch_size=5, # number of records to process in a batch
-            bisect_batch_on_error=True,
             on_failure=_lambda_event_sources.SqsDlq(cryptoWatchSQS),
             retry_attempts=3, # number of times to retry
         ))
