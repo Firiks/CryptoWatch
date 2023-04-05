@@ -106,11 +106,17 @@ class CryptoWatchStack(Stack):
             assumed_by=_iam.ServicePrincipal("lambda.amazonaws.com")
         )
 
+        # Allow lambda to subscribe to SNS topic
         role.add_to_policy(
             _iam.PolicyStatement(
                 actions=["sns:Subscribe"],
                 resources=[topic.topic_arn]
             )
+        )
+
+        # Add AWSLambdaBasicExecutionRole to lambda to allow logging in CloudWatch
+        role.add_managed_policy(
+            _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
         )
 
         """
@@ -241,6 +247,7 @@ class CryptoWatchStack(Stack):
 
         # SNS permissions
         topic.grant_publish(notifySNSFunction)
+
 
         """
         Outputs
