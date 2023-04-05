@@ -25,6 +25,8 @@ def handle(event, context):
             'body': 'Please provide a valid email address'
         }
 
+    print(f'subscribing {email} to the SNS topic')
+
     # subscribe the email address to the SNS topic
     sns.subscribe(
         TopicArn=topic_arn,
