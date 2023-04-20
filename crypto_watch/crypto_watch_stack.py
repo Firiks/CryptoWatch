@@ -131,7 +131,7 @@ class CryptoWatchStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             index="fetch_data.py",
             handler="handle",
-            reserved_concurrent_executions=10,
+            reserved_concurrent_executions=1,
             dead_letter_queue_enabled=True,
             dead_letter_queue=cryptoWatchSQS,
             log_retention=_logs.RetentionDays.THREE_DAYS,
@@ -151,7 +151,7 @@ class CryptoWatchStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             index="notify_sns.py",
             handler="handle",
-            reserved_concurrent_executions=10,
+            reserved_concurrent_executions=1,
             dead_letter_queue_enabled=True,
             dead_letter_queue=cryptoWatchSQS,
             log_retention=_logs.RetentionDays.THREE_DAYS,
@@ -196,9 +196,9 @@ class CryptoWatchStack(Stack):
         notifySNSFunction.add_event_source(_lambda_event_sources.DynamoEventSource(
             table,
             starting_position=_lambda.StartingPosition.TRIM_HORIZON, # start from the beginning
-            batch_size=5, # number of records to process in a batch
+            batch_size=100, # number of records to process in a batch
             on_failure=_lambda_event_sources.SqsDlq(cryptoWatchSQS),
-            retry_attempts=3, # number of times to retry
+            retry_attempts=1, # number of times to retry
         ))
 
         """
@@ -228,7 +228,7 @@ class CryptoWatchStack(Stack):
             cors=_lambda.FunctionUrlCorsOptions(
                 allowed_origins=["*"],
                 allowed_methods=[_lambda.HttpMethod.POST],
-                max_age=Duration.minutes(1)
+                max_age=Duration.seconds(3)
             )
         )
 
