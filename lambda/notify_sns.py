@@ -75,16 +75,19 @@ def notify_telegram(message):
     message = urllib.parse.quote(message)
 
     send_data = 'https://api.telegram.org/bot' + api_key + '/sendMessage?chat_id=' + chat_id + '&parse_mode=MarkdownV2&text=' + message
-    response = requests.get(send_data)
-
-    print('Telegram webhook response:' , response.json())
-
+    try:
+        response = requests.get(send_data, timeout=0.1) # avoid lambda timeout
+        print('Telegram webhook response:' , response.json())
+    except:
+        pass
 
 def notify_discord(message):
     # generate webhook in channel -> webhooks -> create webhook
     webhook_url = str(os.environ['DISCORD_WEBHOOK'])
 
     data = {"content": message}
-    response = requests.post(webhook_url, json=data)
-
-    print('Discord webhook response:' , response.status_code)
+    try:
+        response = requests.post(webhook_url, json=data, timeout=0.1) # avoid lambda timeout
+        print('Discord webhook response:' , response.status_code)
+    except:
+        pass
