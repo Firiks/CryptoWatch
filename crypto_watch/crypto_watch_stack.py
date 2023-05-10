@@ -63,7 +63,7 @@ class CryptoWatchStack(Stack):
             read_capacity=1
         )
 
-        # uncoment to enable scaling across multiple regions
+        # uncomment to enable scaling across multiple regions
         # read scaling
         # table.auto_scale_read_capacity(
         #     min_capacity=1,
@@ -198,7 +198,7 @@ class CryptoWatchStack(Stack):
             starting_position=_lambda.StartingPosition.TRIM_HORIZON, # start from the beginning
             batch_size=100, # number of records to process in a batch
             on_failure=_lambda_event_sources.SqsDlq(cryptoWatchSQS),
-            retry_attempts=1, # number of times to retry
+            retry_attempts=0, # number of times to retry
         ))
 
         """
